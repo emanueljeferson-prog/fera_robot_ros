@@ -6,11 +6,11 @@ builtin_interfaces/Time timestamp
 int16 motor_speed_left
 int16 motor_speed_right
 # IMU data
-geometry_msgs/Point accel
-geometry_msgs/Point gyro
-geometry_msgs/Point mag
+PointUint16 accel
+PointUint16 gyro
+PointUint16 mag
 # Temperature data
-int16 temperature 
+uint16 temperature 
 # Battery data
-int16 battery_voltage
-int16 battery_percentage
+uint16 battery_voltage
+uint16 battery_percentage
