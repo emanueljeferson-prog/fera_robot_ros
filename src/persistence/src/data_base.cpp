@@ -4,9 +4,9 @@
 Database::Database() {}
 
 Database::~Database() {
-    if (db) {
+    /*if (db) {
         sqlite3_close(db);
-    }
+    }*/
 }
 
 bool Database::connectDatabase(const std::string& dbPath) {
@@ -40,6 +40,20 @@ void Database::insertImuData(const robot_models::imu& imuData) {
     sqlite3_bind_int(statement, 9, imuData.mag_x);
     sqlite3_bind_int(statement, 10, imuData.mag_y);
     sqlite3_bind_int(statement, 11, imuData.mag_z);
+    RCLCPP_INFO(
+        rclcpp::get_logger("Database"),
+        "Saving IMU: timestamp=%u.%09u accel=(%u, %u, %u) gyro=(%u, %u, %u) mag=(%u, %u, %u)",
+        imuData.timestamp_value.sec,
+        imuData.timestamp_value.nanosec,
+        imuData.accel_x,
+        imuData.accel_y,
+        imuData.accel_z,
+        imuData.gyro_x,
+        imuData.gyro_y,
+        imuData.gyro_z,
+        imuData.mag_x,
+        imuData.mag_y,
+        imuData.mag_z);
     sqlite3_step(statement);
     sqlite3_finalize(statement);
 }
@@ -56,6 +70,13 @@ void Database::insertOdometryData(const robot_models::odometry& odometryData) {
     sqlite3_bind_int64(statement, 2, odometryData.timestamp_value.nanosec);
     sqlite3_bind_int(statement, 3, odometryData.velocity_left);
     sqlite3_bind_int(statement, 4, odometryData.velocity_right);
+    RCLCPP_INFO(
+        rclcpp::get_logger("Database"),
+        "Saving odometry: timestamp=%u.%09u velocity_left=%d velocity_right=%d",
+        odometryData.timestamp_value.sec,
+        odometryData.timestamp_value.nanosec,
+        odometryData.velocity_left,
+        odometryData.velocity_right);
     sqlite3_step(statement);
     sqlite3_finalize(statement);
 }
@@ -72,6 +93,13 @@ void Database::insertBatteryData(const robot_models::battery& batteryData) {
     sqlite3_bind_int64(statement, 2, batteryData.timestamp_value.nanosec);
     sqlite3_bind_int(statement, 3, batteryData.temperature);
     sqlite3_bind_int(statement, 4, batteryData.voltage);
+    RCLCPP_INFO(
+        rclcpp::get_logger("Database"),
+        "Saving battery: timestamp=%u.%09u temperature=%u voltage=%u",
+        batteryData.timestamp_value.sec,
+        batteryData.timestamp_value.nanosec,
+        batteryData.temperature,
+        batteryData.voltage);
     sqlite3_step(statement);
     sqlite3_finalize(statement);
 }
