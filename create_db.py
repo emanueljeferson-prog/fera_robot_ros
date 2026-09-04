@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
 Cria o banco de dados sensor_data.db (SQLite) com as tabelas:
-  - imu       (timestamp, accel_x/y/z, gyro_x/y/z, mag_x/y/z)
-  - gnss      (timestamp, latitude, longitude, elevation)
-  - odometry  (timestamp, velocity_left, velocity_right)
-  - system    (timestamp, temperature, battery_voltage)
+    - imu       (timestamp_sec, timestamp_nanosec, accel_x/y/z, gyro_x/y/z, mag_x/y/z)
+    - gnss      (timestamp_sec, timestamp_nanosec, latitude, longitude, elevation)
+    - odometry  (timestamp_sec, timestamp_nanosec, velocity_left, velocity_right)
+    - system    (timestamp_sec, timestamp_nanosec, temperature, battery_voltage)
 
 Uso:
     python3 create_sensor_db.py [caminho/para/sensor_data.db]
@@ -20,22 +20,24 @@ SCHEMA = {
     "imu": """
         CREATE TABLE IF NOT EXISTS imu (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp REAL NOT NULL,
-            accel_x REAL,
-            accel_y REAL,
-            accel_z REAL,
-            gyro_x REAL,
-            gyro_y REAL,
-            gyro_z REAL,
-            mag_x REAL,
-            mag_y REAL,
-            mag_z REAL
+            timestamp_sec INTEGER NOT NULL,
+            timestamp_nanosec INTEGER NOT NULL,
+            accel_x INTEGER,
+            accel_y INTEGER,
+            accel_z INTEGER,
+            gyro_x INTEGER,
+            gyro_y INTEGER,
+            gyro_z INTEGER,
+            mag_x INTEGER,
+            mag_y INTEGER,
+            mag_z INTEGER
         );
     """,
     "gnss": """
         CREATE TABLE IF NOT EXISTS gnss (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp REAL NOT NULL,
+            timestamp_sec INTEGER NOT NULL,
+            timestamp_nanosec INTEGER NOT NULL,
             latitude REAL,
             longitude REAL,
             elevation REAL
@@ -44,27 +46,29 @@ SCHEMA = {
     "odometry": """
         CREATE TABLE IF NOT EXISTS odometry (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp REAL NOT NULL,
-            velocity_left REAL,
-            velocity_right REAL
+            timestamp_sec INTEGER NOT NULL,
+            timestamp_nanosec INTEGER NOT NULL,
+            velocity_left INTEGER,
+            velocity_right INTEGER
         );
     """,
     "system": """
         CREATE TABLE IF NOT EXISTS system (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp REAL NOT NULL,
-            temperature REAL,
-            battery_voltage REAL
+            timestamp_sec INTEGER NOT NULL,
+            timestamp_nanosec INTEGER NOT NULL,
+            temperature INTEGER,
+            battery_voltage INTEGER
         );
     """,
 }
 
 # Índices por timestamp, úteis para consultas por intervalo de tempo
 INDEXES = {
-    "imu": "CREATE INDEX IF NOT EXISTS idx_imu_timestamp ON imu (timestamp);",
-    "gnss": "CREATE INDEX IF NOT EXISTS idx_gnss_timestamp ON gnss (timestamp);",
-    "odometry": "CREATE INDEX IF NOT EXISTS idx_odometry_timestamp ON odometry (timestamp);",
-    "system": "CREATE INDEX IF NOT EXISTS idx_system_timestamp ON system (timestamp);",
+    "imu": "CREATE INDEX IF NOT EXISTS idx_imu_timestamp ON imu (timestamp_sec, timestamp_nanosec);",
+    "gnss": "CREATE INDEX IF NOT EXISTS idx_gnss_timestamp ON gnss (timestamp_sec, timestamp_nanosec);",
+    "odometry": "CREATE INDEX IF NOT EXISTS idx_odometry_timestamp ON odometry (timestamp_sec, timestamp_nanosec);",
+    "system": "CREATE INDEX IF NOT EXISTS idx_system_timestamp ON system (timestamp_sec, timestamp_nanosec);",
 }
 
 
