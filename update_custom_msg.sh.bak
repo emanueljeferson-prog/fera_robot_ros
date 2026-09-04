@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+#unset AMENT_PREFIX_PATH CMAKE_PREFIX_PATH COLCON_PREFIX_PATH AMENT_CURRENT_PREFIX
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+LOG_DIR="${SCRIPT_DIR}/.logs"
+mkdir -p "$LOG_DIR"
+LOG_FILE="${LOG_DIR}/update_custom_msg_$(date +%Y%m%d_%H%M%S).log"
+
+log() {
+	printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" | tee -a "$LOG_FILE"
+}
+
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+trap 'status=$?; log "ERRO na linha ${LINENO}: ${BASH_COMMAND} (status ${status})"; exit "$status"' ERR
+
+log "Iniciando atualização de mensagens"
+log "Log salvo em: ${LOG_FILE}"
+
+log "Carregando ambiente do ROS"
+source ~/.bashrc
+
+log "Removendo install, build e log anteriores"
+sudo rm -rf install build log
+
+log "Compilando workspace base"
+colcon build
+
+log "Carregando install/setup.bash"
+source install/setup.bash
+
+log "Criando workspace do agente micro-ROS"
+ros2 run micro_ros_setup create_agent_ws.sh
+
+log "Compilando agente micro-ROS"
+ros2 run micro_ros_setup build_agent.sh
+
+log "Criando firmware workspace"
+ros2 run micro_ros_setup create_firmware_ws.sh generate_lib
+
+log "Criando workspace de firmware das interfaces"
+ros2 run robot_interfaces create_fwws.sh
+
+log "Compilando firmware"
+ros2 run micro_ros_setup build_firmware.sh src/pico_toolchain.cmake src/pico_colcon.meta
+
+log "Atualização concluída com sucesso"
+
