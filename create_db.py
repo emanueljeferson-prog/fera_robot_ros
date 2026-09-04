@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-Cria o banco de dados sensor_data.db (SQLite) com as tabelas:
+Cria o banco de dados robot_data.db (SQLite) com as tabelas:
     - imu       (timestamp_sec, timestamp_nanosec, accel_x/y/z, gyro_x/y/z, mag_x/y/z)
     - gnss      (timestamp_sec, timestamp_nanosec, latitude, longitude, elevation)
     - odometry  (timestamp_sec, timestamp_nanosec, velocity_left, velocity_right)
     - system    (timestamp_sec, timestamp_nanosec, temperature, battery_voltage)
 
 Uso:
-    python3 create_sensor_db.py [caminho/para/sensor_data.db]
+    python3 create_sensor_db.py [caminho/para/robot_data.db]
 
-Se nenhum caminho for passado, cria "sensor_data.db" no diretório atual.
+Se nenhum caminho for passado, cria "robot_data.db" no diretório atual.
 """
 
 import sqlite3
@@ -91,5 +91,5 @@ def create_database(db_path: str) -> None:
 
 
 if __name__ == "__main__":
-    db_path = sys.argv[1] if len(sys.argv) > 1 else "sensor_data.db"
+    db_path = sys.argv[1] if len(sys.argv) > 1 else "robot_data.db"
     create_database(db_path)
