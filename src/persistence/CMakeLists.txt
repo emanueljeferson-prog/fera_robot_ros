@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(robot_interfaces)
+project(persistence)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -7,21 +7,21 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(builtin_interfaces REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(robot_interfaces REQUIRED)
 
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/SpeedCmd.msg"
-  "msg/SensorData.msg"
-  "msg/PointUint16.msg"
-  DEPENDENCIES geometry_msgs builtin_interfaces
+add_executable(persistence_node
+  src/persistence_node.cpp
+  src/data_base.cpp
 )
-
-ament_export_dependencies(rosidl_default_runtime)
+target_include_directories(persistence_node PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}
+)
+ament_target_dependencies(persistence_node rclcpp robot_interfaces)
+target_link_libraries(persistence_node sqlite3)
+install(TARGETS persistence_node
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -36,8 +36,3 @@ if(BUILD_TESTING)
 endif()
 
 ament_package()
-
-install(PROGRAMS
-  scripts/create_fwws.sh
-  DESTINATION lib/${PROJECT_NAME}
-)
