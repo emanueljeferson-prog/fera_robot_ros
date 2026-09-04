@@ -1,3 +1,3 @@
-uint16 x
-uint16 y
-uint16 z
+int16 x
+int16 y
+int16 z

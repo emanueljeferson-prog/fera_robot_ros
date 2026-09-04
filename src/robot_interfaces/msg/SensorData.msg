@@ -10,7 +10,7 @@ PointUint16 accel
 PointUint16 gyro
 PointUint16 mag
 # Temperature data
-uint16 temperature 
+int16 temperature 
 # Battery data
 uint16 battery_voltage
 uint16 battery_percentage
