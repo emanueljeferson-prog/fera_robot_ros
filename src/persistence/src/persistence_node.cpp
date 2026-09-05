@@ -11,6 +11,10 @@ PersistenceNode::PersistenceNode() : Node("persistence_node"), running_(true) {
         this->create_subscription<robot_interfaces
         ::msg
         ::SensorData>("sensor_data", 10, std::bind(&PersistenceNode::sensorDataCallback, this, std::placeholders::_1));
+    rclcpp::QoS qos(rclcpp::KeepLast(1));
+    qos.transient_local();
+    publisher_ = this->create_publisher<robot_interfaces::msg::Configurations>("configurations", qos);
+    publishConfigurations();   
 }
 
 PersistenceNode::~PersistenceNode() {
@@ -62,6 +66,37 @@ void PersistenceNode::databaseWorker() {
         db->insertOdometryData(data.odometry_data);
         db->insertBatteryData(data.battery_data);
     }
+}
+
+void PersistenceNode::publishConfigurations() {
+    robot_models::configurations configData;
+    db->getConfigurations(configData);
+    auto msg = robot_interfaces::msg::Configurations();
+    msg.accel_offset_x = configData.accel_offset_x;
+    msg.accel_offset_y = configData.accel_offset_y;
+    msg.accel_offset_z = configData.accel_offset_z;
+    msg.gyro_offset_x = configData.gyro_offset_x;
+    msg.gyro_offset_y = configData.gyro_offset_y;
+    msg.gyro_offset_z = configData.gyro_offset_z;
+    msg.mag_offset_x = configData.mag_offset_x;
+    msg.mag_offset_y = configData.mag_offset_y;
+    msg.mag_offset_z = configData.mag_offset_z;
+    msg.accel_scale = configData.accel_scale;
+    msg.gyro_scale = configData.gyro_scale;
+    msg.mag_scale = configData.mag_scale;
+    msg.gnss_reference_lat = configData.gnss_reference_lat;
+    msg.gnss_reference_lon = configData.gnss_reference_lon;
+    msg.gnss_reference_alt = configData.gnss_reference_alt;
+    msg.semi_major_axis = configData.semi_major_axis;
+    msg.semi_minor_axis = configData.semi_minor_axis;
+    msg.eccentricity = configData.eccentricity;
+    msg.flattening = configData.flattening;
+    msg.gravity = configData.gravity;
+    msg.magnetic_declination = configData.magnetic_declination;
+    msg.magnetic_inclination = configData.magnetic_inclination;
+    msg.magnetic_field_strength = configData.magnetic_field_strength;
+    msg.scale_factor_encoder = configData.scale_factor_encoder;
+    publisher_->publish(msg);
 }
 
 int main(int argc, char* argv[]) {

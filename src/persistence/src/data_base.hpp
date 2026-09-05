@@ -3,6 +3,7 @@
 #include "robot_models/imu.hpp"
 #include "robot_models/odometry.hpp"
 #include "robot_models/battery.hpp"
+#include "robot_models/configurations.hpp"
 
 class Database {
 public:
@@ -12,6 +13,7 @@ public:
     void insertImuData(const robot_models::imu& imuData);
     void insertOdometryData(const robot_models::odometry& odometryData);
     void insertBatteryData(const robot_models::battery& batteryData);
+    void getConfigurations(robot_models::configurations& configData);
 private:
     sqlite3* db = nullptr;
 };

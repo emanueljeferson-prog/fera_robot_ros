@@ -1,28 +1,27 @@
 cmake_minimum_required(VERSION 3.8)
-project(robot_interfaces)
+project(estimator)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(builtin_interfaces REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(robot_interfaces REQUIRED)
+find_package(persistence REQUIRED)
 
-rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/SpeedCmd.msg"
-  "msg/SensorData.msg"
-  "msg/PointUint16.msg"
-  "msg/Configurations.msg"
-  DEPENDENCIES geometry_msgs builtin_interfaces
+add_executable(estimator_node
+  src/estimator_node.cpp
+  src/kalman_filter.cpp
+)
+ament_target_dependencies(estimator_node rclcpp robot_interfaces)
+target_include_directories(estimator_node PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/../persistence
 )
 
-ament_export_dependencies(rosidl_default_runtime)
+install(TARGETS estimator_node
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -37,8 +36,3 @@ if(BUILD_TESTING)
 endif()
 
 ament_package()
-
-install(PROGRAMS
-  scripts/create_fwws.sh
-  DESTINATION lib/${PROJECT_NAME}
-)

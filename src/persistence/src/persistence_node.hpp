@@ -1,5 +1,6 @@
 #include <queue>
 #include "rclcpp/rclcpp.hpp"
+#include "robot_interfaces/msg/configurations.hpp"
 #include "robot_interfaces/msg/sensor_data.hpp"
 #include "data_base.hpp"
 #include "robot_models/sensor_data.hpp"
@@ -11,6 +12,7 @@ public:
 private:
     void sensorDataCallback(const robot_interfaces::msg::SensorData::SharedPtr msg);
     void databaseWorker();
+    void publishConfigurations();
 private:
     std::thread worker_;
     std::mutex mutex_;
@@ -19,4 +21,5 @@ private:
     std::unique_ptr<Database> db;
     std::queue<robot_models::sensor_data> dataQueue;
     rclcpp::Subscription<robot_interfaces::msg::SensorData>::SharedPtr subscription_;
+    rclcpp::Publisher<robot_interfaces::msg::Configurations>::SharedPtr publisher_;
 };

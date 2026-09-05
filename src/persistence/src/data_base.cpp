@@ -103,3 +103,38 @@ void Database::insertBatteryData(const robot_models::battery& batteryData) {
     sqlite3_step(statement);
     sqlite3_finalize(statement);
 }
+
+void Database::getConfigurations(robot_models::configurations& configData) {
+    const char* sql = "SELECT accel_offset_x, accel_offset_y, accel_offset_z, gyro_offset_x, gyro_offset_y, gyro_offset_z, mag_offset_x, mag_offset_y, mag_offset_z, accel_scale, gyro_scale, mag_scale, gnss_reference_lat, gnss_reference_lon, gnss_reference_alt, semi_major_axis, semi_minor_axis, eccentricity, flattening, gravity, magnetic_declination, magnetic_inclination, magnetic_field_strength, scale_factor_encoder FROM configurations LIMIT 1;";
+    sqlite3_stmt* statement = nullptr;
+    if (sqlite3_prepare_v2(db, sql, -1, &statement, nullptr) != SQLITE_OK) {
+        return;
+    }
+    if (sqlite3_step(statement) == SQLITE_ROW) {
+        configData.accel_offset_x = sqlite3_column_double(statement,0);
+        configData.accel_offset_y = sqlite3_column_double(statement,1);
+        configData.accel_offset_z = sqlite3_column_double(statement,2);
+        configData.gyro_offset_x = sqlite3_column_double(statement,3);
+        configData.gyro_offset_y = sqlite3_column_double(statement,4);
+        configData.gyro_offset_z = sqlite3_column_double(statement,5);
+        configData.mag_offset_x = sqlite3_column_double(statement,6);
+        configData.mag_offset_y = sqlite3_column_double(statement,7);
+        configData.mag_offset_z = sqlite3_column_double(statement,8);
+        configData.accel_scale = sqlite3_column_double(statement,9);
+        configData.gyro_scale = sqlite3_column_double(statement,10);
+        configData.mag_scale = sqlite3_column_double(statement,11);
+        configData.gnss_reference_lat = sqlite3_column_double(statement,12);
+        configData.gnss_reference_lon = sqlite3_column_double(statement,13);
+        configData.gnss_reference_alt = sqlite3_column_double(statement,14);
+        configData.semi_major_axis = sqlite3_column_double(statement,15);
+        configData.semi_minor_axis = sqlite3_column_double(statement,16);
+        configData.eccentricity = sqlite3_column_double(statement,17);
+        configData.flattening = sqlite3_column_double(statement,18);
+        configData.gravity = sqlite3_column_double(statement,19);
+        configData.magnetic_declination = sqlite3_column_double(statement,20);
+        configData.magnetic_inclination = sqlite3_column_double(statement,21);
+        configData.magnetic_field_strength = sqlite3_column_double(statement,22);
+        configData.scale_factor_encoder = sqlite3_column_double(statement,23);
+    }
+    sqlite3_finalize(statement);
+}
